@@ -4,7 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Json.Decode as Decode exposing (Decoder, int, list, string)
+import Json.Decode as Decode exposing (Decoder, field, int, list, map5, string)
 import Json.Decode.Pipeline exposing (required)
 
 
@@ -105,6 +105,8 @@ postsDecoder =
     Decode.list postDecoder
 
 
+
+{--
 postDecoder : Decoder Post
 postDecoder =
     Decode.succeed Post
@@ -113,10 +115,9 @@ postDecoder =
         |> required "lName" string
         |> required "zip" string
         |> required "mail" string
+--}
 
 
-
-{--
 postDecoder : Decoder Post
 postDecoder =
     map5 Post
@@ -125,7 +126,6 @@ postDecoder =
         (field "lName" string)
         (field "zip" string)
         (field "mail" string)
---}
 
 
 httpCommand : Cmd Msg
