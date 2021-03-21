@@ -121,7 +121,7 @@ errorToString error =
 getContractors : Cmd Message
 getContractors =
     Http.get
-        { url = "http://localhost:8080/org/api/org/empl"
+        { url = "http://localhost:8080/org/api/org/con/all"
         , expect = Http.expectJson ContractorResult allContractorsDecoder
         }
 

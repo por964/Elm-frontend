@@ -5,10 +5,9 @@ import Html exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (Decoder, field, int, list, map5, string)
-import Json.Decode.Pipeline exposing (required)
 
 
-type alias Post =
+type alias Contractor =
     { id : Int
     , fName : String
     , lName : String
@@ -18,7 +17,7 @@ type alias Post =
 
 
 type alias Model =
-    { posts : List Post
+    { contractors : List Contractor
     , errorMessage : Maybe String
     }
 
@@ -39,7 +38,7 @@ viewPostsOrError model =
             viewError message
 
         Nothing ->
-            viewPosts model.posts
+            viewContractors model.contractors
 
 
 viewError : String -> Html Msg
@@ -54,12 +53,12 @@ viewError errorMessage =
         ]
 
 
-viewPosts : List Post -> Html Msg
-viewPosts posts =
+viewContractors : List Contractor -> Html Msg
+viewContractors contractors =
     div []
-        [ h3 [] [ text "Posts" ]
+        [ h3 [] [ text "Contractors" ]
         , table []
-            ([ viewTableHeader ] ++ List.map viewPost posts)
+            ([ viewTableHeader ] ++ List.map viewContractor contractors)
         ]
 
 
@@ -79,48 +78,35 @@ viewTableHeader =
         ]
 
 
-viewPost : Post -> Html Msg
-viewPost post =
+viewContractor : Contractor -> Html Msg
+viewContractor contractor =
     tr []
         [ td []
-            [ text (String.fromInt post.id) ]
+            [ text (String.fromInt contractor.id) ]
         , td []
-            [ text post.fName ]
+            [ text contractor.fName ]
         , td []
-            [ text post.lName ]
+            [ text contractor.lName ]
         , td []
-            [ text post.zip ]
+            [ text contractor.zip ]
         , td []
-            [ text post.mail ]
+            [ text contractor.mail ]
         ]
 
 
 type Msg
     = SendHttpRequest
-    | DataReceived (Result Http.Error (List Post))
+    | DataReceived (Result Http.Error (List Contractor))
 
 
-postsDecoder : Decode.Decoder (List Post)
-postsDecoder =
-    Decode.list postDecoder
+contractorsDecoder : Decode.Decoder (List Contractor)
+contractorsDecoder =
+    Decode.field "contractors" (Decode.list contractorDecoder)
 
 
-
-{--
-postDecoder : Decoder Post
-postDecoder =
-    Decode.succeed Post
-        |> required "id" int
-        |> required "fName" string
-        |> required "lName" string
-        |> required "zip" string
-        |> required "mail" string
---}
-
-
-postDecoder : Decoder Post
-postDecoder =
-    map5 Post
+contractorDecoder : Decoder Contractor
+contractorDecoder =
+    map5 Contractor
         (field "id" int)
         (field "fName" string)
         (field "lName" string)
@@ -132,7 +118,7 @@ httpCommand : Cmd Msg
 httpCommand =
     Http.get
         { url = "http://localhost:8080/org/api/org/con/all"
-        , expect = Http.expectJson DataReceived (list postDecoder)
+        , expect = Http.expectJson DataReceived contractorsDecoder
         }
 
 
@@ -142,9 +128,9 @@ update msg model =
         SendHttpRequest ->
             ( model, httpCommand )
 
-        DataReceived (Ok posts) ->
+        DataReceived (Ok contractors) ->
             ( { model
-                | posts = posts
+                | contractors = contractors
                 , errorMessage = Nothing
               }
             , Cmd.none
@@ -179,7 +165,7 @@ buildErrorMessage httpError =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { posts = []
+    ( { contractors = []
       , errorMessage = Nothing
       }
     , Cmd.none
