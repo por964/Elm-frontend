@@ -4,22 +4,19 @@ import Browser
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Json.Decode as Decode exposing (Decoder, field, int, list, map5, string)
-import Json.Decode.Pipeline exposing (required)
-import Project exposing (..)
+import Json.Decode as Decode exposing (Decoder, field, int, map4, string)
 
 
-type alias Employee project =
+type alias Employee =
     { id : Int
     , firstName : String
     , lastName : String
     , email : String
-    , projects : List project
     }
 
 
 type alias Model =
-    { all : List project
+    { all : List Employee
     , errorMessage : Maybe String
     }
 
@@ -104,14 +101,15 @@ employeesDecoder =
 
 employeeDecoder : Decoder Employee
 employeeDecoder =
-    map5 Employee
+    map4 Employee
         (field "id" int)
         (field "firstName" string)
         (field "lastName" string)
         (field "mail" string)
-        (field "projects" projectsDecoder)
 
 
+
+{--
 emplDecoder : Decoder Employee
 emplDecoder =
     Decode.succeed Employee
@@ -120,6 +118,7 @@ emplDecoder =
         |> required "lastName" string
         |> required "mail" string
         |> required "projects" projectsDecoder
+--}
 
 
 httpCommand : Cmd Msg

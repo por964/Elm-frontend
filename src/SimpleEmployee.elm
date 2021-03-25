@@ -26,7 +26,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ button [ onClick SendHttpRequest ]
-            [ text "Get data from server" ]
+            [ text "Get list of all employees" ]
         , viewEmployeesOrError model
         ]
 
