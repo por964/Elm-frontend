@@ -1,5 +1,6 @@
-module Page.EditProject exposing (Model)
+module Page.NewProject exposing (Model)
 
+import Error exposing (buildErrorMessage)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -90,7 +91,7 @@ saveProject project =
         RemoteData.Success projectData ->
             let
                 postUrl =
-                    "http://localhost:5019/posts/"
+                    "http://localhost:8080/org/api/org/proj"
                         ++ Project.idToString projectData.id
             in
             Http.request
@@ -187,22 +188,3 @@ viewSaveError maybeError =
 
         Nothing ->
             text ""
-
-
-buildErrorMessage : Http.Error -> String
-buildErrorMessage httpError =
-    case httpError of
-        Http.BadUrl message ->
-            message
-
-        Http.Timeout ->
-            "Server is taking too long to respond. Please try again later."
-
-        Http.NetworkError ->
-            "Unable to reach server."
-
-        Http.BadStatus statusCode ->
-            "Request failed with status code: " ++ String.fromInt statusCode
-
-        Http.BadBody message ->
-            message

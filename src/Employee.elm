@@ -1,10 +1,12 @@
-module Employee exposing (..)
+module Employee exposing (Employee, employeeDecoder, emptyEmployee, newEmployeeEncoder)
 
 import Browser
+import Error exposing (buildErrorMessage)
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (Decoder, field, int, map4, string)
+import Json.Encode as Encode exposing (int, string)
 
 
 type alias Employee =
@@ -151,25 +153,6 @@ update msg model =
             )
 
 
-buildErrorMessage : Http.Error -> String
-buildErrorMessage httpError =
-    case httpError of
-        Http.BadUrl message ->
-            message
-
-        Http.Timeout ->
-            "Server is taking too long to respond. Please try again later."
-
-        Http.NetworkError ->
-            "Unable to reach server."
-
-        Http.BadStatus statusCode ->
-            "Request failed with status code: " ++ String.fromInt statusCode
-
-        Http.BadBody message ->
-            message
-
-
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { all = []
@@ -187,3 +170,21 @@ main =
         , update = update
         , subscriptions = \_ -> Sub.none
         }
+
+
+emptyEmployee : Employee
+emptyEmployee =
+    { id = -1
+    , firstName = ""
+    , lastName = ""
+    , email = ""
+    }
+
+
+newEmployeeEncoder : Employee -> Encode.Value
+newEmployeeEncoder employee =
+    Encode.object
+        [ ( "firstName", Encode.string employee.firstName )
+        , ( "lastName", Encode.string employee.lastName )
+        , ( "email", Encode.string employee.email )
+        ]
