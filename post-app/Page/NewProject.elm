@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Encode as Encode
+import Maybe exposing (withDefault)
 import Project exposing (Project, ProjectID, projectDecoder, projectEncoder)
 import RemoteData exposing (WebData)
 
@@ -36,7 +37,7 @@ initialModel project =
 type Msg
     = ProjectReceived (WebData Project)
     | UpdateTitle String
-    | UpdateDuration Int
+    | UpdateDuration String
     | SaveProject
     | ProjectSaved (Result Http.Error Project)
 
@@ -58,8 +59,11 @@ update msg model =
             in
             ( { model | project = updateTitle }, Cmd.none )
 
-        UpdateDuration newDuration ->
+        UpdateDuration durationText ->
             let
+                newDuration =
+                    withDefault 0 (String.toInt durationText)
+
                 updateDuration =
                     RemoteData.map
                         (\projectData ->
@@ -152,7 +156,7 @@ editForm project =
             , br [] []
             , input
                 [ type_ "number"
-                , value project.duration
+                , value <| String.fromInt project.duration
                 , onInput UpdateDuration
                 ]
                 []
@@ -163,6 +167,12 @@ editForm project =
                 [ text "Submit" ]
             ]
         ]
+
+
+sanitize : String -> Maybe Int
+sanitize input =
+    input
+        |> String.toInt
 
 
 viewFetchError : String -> Html Msg

@@ -106,7 +106,7 @@ employeeDecoder =
         (field "id" int)
         (field "firstName" string)
         (field "lastName" string)
-        (field "email" string)
+        (field "mail" string)
 
 
 emplDecoder : Decoder Employee
@@ -115,7 +115,7 @@ emplDecoder =
         |> required "id" int
         |> required "firstName" string
         |> required "lastName" string
-        |> required "email" string
+        |> required "mail" string
 
 
 httpCommand : Cmd Msg

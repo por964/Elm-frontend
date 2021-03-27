@@ -1,5 +1,6 @@
 module NewEmployee exposing (Model)
 
+import Browser
 import Employee exposing (Employee, employeeDecoder, emptyEmployee, newEmployeeEncoder)
 import Error exposing (buildErrorMessage)
 import Html exposing (..)
@@ -133,3 +134,18 @@ viewError maybeError =
 
         Nothing ->
             text ""
+
+
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( initialModel emptyEmployee, Cmd.none )
+
+
+main : Program () Model Msg
+main =
+    Browser.element
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = \_ -> Sub.none
+        }

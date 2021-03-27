@@ -27,7 +27,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ button [ onClick SendHttpRequest ]
-            [ text "Get data from server" ]
+            [ text "Get all employees" ]
         , viewEmployeesOrError model
         ]
 
@@ -104,10 +104,28 @@ employeesDecoder =
 employeeDecoder : Decoder Employee
 employeeDecoder =
     map4 Employee
-        (field "id" int)
-        (field "firstName" string)
-        (field "lastName" string)
-        (field "mail" string)
+        (field "id" Decode.int)
+        (field "firstName" Decode.string)
+        (field "lastName" Decode.string)
+        (field "mail" Decode.string)
+
+
+emptyEmployee : Employee
+emptyEmployee =
+    { id = -1
+    , firstName = ""
+    , lastName = ""
+    , email = ""
+    }
+
+
+newEmployeeEncoder : Employee -> Encode.Value
+newEmployeeEncoder employee =
+    Encode.object
+        [ ( "firstName", Encode.string employee.firstName )
+        , ( "lastName", Encode.string employee.lastName )
+        , ( "email", Encode.string employee.email )
+        ]
 
 
 
@@ -170,21 +188,3 @@ main =
         , update = update
         , subscriptions = \_ -> Sub.none
         }
-
-
-emptyEmployee : Employee
-emptyEmployee =
-    { id = -1
-    , firstName = ""
-    , lastName = ""
-    , email = ""
-    }
-
-
-newEmployeeEncoder : Employee -> Encode.Value
-newEmployeeEncoder employee =
-    Encode.object
-        [ ( "firstName", Encode.string employee.firstName )
-        , ( "lastName", Encode.string employee.lastName )
-        , ( "email", Encode.string employee.email )
-        ]
