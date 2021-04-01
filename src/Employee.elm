@@ -3,6 +3,7 @@ module Employee exposing (Employee, employeeDecoder, emptyEmployee, newEmployeeE
 import Browser
 import Error exposing (buildErrorMessage)
 import Html exposing (..)
+import Html.Attributes exposing (type_)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (Decoder, field, int, map4, string)
@@ -88,12 +89,18 @@ viewEmployee employee =
             [ text employee.lastName ]
         , td []
             [ text employee.email ]
+        , td []
+             [ button [ type_ "button", onClick (DeleteEmp employee.id) ]
+               [ text "Delete" ]
+                        ]
         ]
 
 
 type Msg
     = SendHttpRequest
     | DataReceived (Result Http.Error (List Employee))
+    | DeleteEmp Int
+    | EmpDeleted (Result Http.Error String)
 
 
 employeesDecoder : Decode.Decoder (List Employee)
@@ -169,6 +176,36 @@ update msg model =
               }
             , Cmd.none
             )
+
+        DeleteEmp id ->
+            ( model, deleteEmp id )
+
+        EmpDeleted (Err error) ->
+            ( { model
+            | errorMessage = Just (buildErrorMessage error) }
+            , Cmd.none
+            )
+
+        EmpDeleted (Ok _) ->
+            ( { model
+            | errorMessage = Nothing
+            }
+            , Cmd.none
+            )
+
+
+
+deleteEmp : Int -> Cmd Msg
+deleteEmp id =
+    Http.request
+        { method = "DELETE"
+        , headers = []
+        , url = "http://localhost:8080/org/api/org/deleteEmp/" ++ String.fromInt id
+        , body = Http.emptyBody
+        , expect = Http.expectString EmpDeleted
+        , timeout = Nothing
+        , tracker = Nothing
+        }
 
 
 init : () -> ( Model, Cmd Msg )
